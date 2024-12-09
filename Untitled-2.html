@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Motos - Gestión de Inventario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .container {
+            display: none;
+        }
+        /* Oculta el contenido principal al inicio */
+        .form-container {
+            margin-top: 20px;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+            .product-table th, .product-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+
+            .product-table th {
+                background-color: #f4f4f4;
+            }
+
+        button {
+            margin-left: 10px;
+            color: white;
+            background-color: red;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* Estilos para la portada */
+        .portada {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+            .portada h1 {
+                font-size: 2.5em;
+                color: darkblue;
+            }
+
+            .portada button {
+                padding: 10px 20px;
+                font-size: 1.2em;
+                background-color: navy;
+                color: white;
+                border: none;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Portada -->
+    <div class="portada">
+        <h1>Bienvenido a la Tienda de Motos</h1>
+        <p>Administra fácilmente el inventario de motos.</p>
+        <button onclick="mostrarSistema()">Ingresar al Sistema</button>
+    </div>
+
+    <!-- Contenido principal del sistema (oculto por defecto) -->
+    <div class="container" id="sistema">
+        <h1>Tienda de Motos - Gestión de Inventario</h1>
+
+        <div class="form-container">
+            <h2>Agregar Moto</h2>
+            <label for="modelo">Modelo de la moto:</label>
+            <input type="text" id="modelo" required>
+            <br><br>
+            <label for="precio">Precio:</label>
+            <input type="number" id="precio" step="0.01" required>
+            <br><br>
+            <label for="cilindrada">Cilindrada (cc):</label>
+            <input type="number" id="cilindrada" required>
+            <br><br>
+            <button onclick="agregarMoto()">Agregar Moto</button>
+            <button onclick="darDeAlta()">Dar de Alta</button> <!-- Botón adicional -->
+        </div>
+
+        <h2>Lista de Motos</h2>
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>Precio</th>
+                    <th>Cilindrada (cc)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="productos">
+                <!-- Motos serán añadidas aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Inicializar lista de motos desde localStorage
+        let motos = JSON.parse(localStorage.getItem('motos')) || [];
+
+        function mostrarMotos() {
+            const productosTbody = document.getElementById('productos');
+            productosTbody.innerHTML = '';
+
+            motos.forEach((moto, index) => {
+                const motoRow = document.createElement('tr');
+                motoRow.innerHTML = `
+                        <td>${moto.modelo}</td>
+                        <td>$${moto.precio}</td>
+                        <td>${moto.cilindrada} cc</td>
+                        <td><button onclick="eliminarMoto(${index})">Eliminar</button></td>
+                    `;
+                productosTbody.appendChild(motoRow);
+            });
+        }
+
+        function agregarMoto() {
+            const modelo = document.getElementById('modelo').value;
+            const precio = parseFloat(document.getElementById('precio').value);
+            const cilindrada = parseInt(document.getElementById('cilindrada').value);
+
+            if (modelo && precio > 0 && cilindrada > 0) {
+                motos.push({ modelo, precio, cilindrada });
+                localStorage.setItem('motos', JSON.stringify(motos));
+                mostrarMotos();
+
+                document.getElementById('modelo').value = '';
+                document.getElementById('precio').value = '';
+                document.getElementById('cilindrada').value = '';
+            } else {
+                alert('Por favor, completa todos los campos con valores válidos.');
+            }
+        }
+
+        function eliminarMoto(index) {
+            motos.splice(index, 1);
+            localStorage.setItem('motos', JSON.stringify(motos));
+            mostrarMotos();
+        }
+
+        // Función para mostrar el sistema de gestión de motos y ocultar la portada
+        function mostrarSistema() {
+            document.querySelector('.portada').style.display = 'none';
+            document.getElementById('sistema').style.display = 'block';
+        }
+
+        // Función para el botón "Dar de Alta" (actualmente no hace nada)
+        function darDeAlta() {
+            alert('Función de dar de alta en desarrollo.');
+        }
+
+        // Mostrar motos al cargar la página
+        mostrarMotos();
+    </script>
+</body>
+</html>
